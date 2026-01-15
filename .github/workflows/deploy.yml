@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v4
 
       - name: Configure AWS credentials
@@ -18,19 +18,20 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: ap-south-1
 
       - name: Deploy via SSM
         run: |
           aws ssm send-command \
             --document-name "AWS-RunShellScript" \
             --targets "Key=tag:Name,Values=sarosh-ec2-webserver" \
-            --comment "Deploy Docker app" \
-            --parameters commands='[
-              "cd /home/ssm-user/end-to-end-devops-pipeline",
+            --parameters 'commands=[
+              "cd /home/ssm-user",
+              "rm -rf end-to-end-devops-pipeline || true",
+              "git clone https://github.com/Sarosh001/end-to-end-devops-pipeline.git",
+              "cd end-to-end-devops-pipeline",
               "docker stop devops || true",
               "docker rm devops || true",
               "docker build -t devops-website .",
               "docker run -d -p 80:80 --name devops devops-website"
             ]'
-
