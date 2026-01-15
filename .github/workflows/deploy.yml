@@ -24,7 +24,7 @@ jobs:
         run: |
           aws ssm send-command \
             --document-name "AWS-RunShellScript" \
-            --targets "Key=tag:Name,Values=devops-ec2" \
+            --targets "Key=tag:Name,Values=sarosh-ec2-webserver" \
             --comment "Deploy Docker app" \
             --parameters commands='[
               "cd /home/ssm-user/end-to-end-devops-pipeline",
